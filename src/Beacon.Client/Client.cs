@@ -7,15 +7,34 @@ namespace Beacon
     {
         private Lib.Probe _probe;
 
+        private string _beaconType;
+        public string BeaconType { get; set; }
+
+        private int _discoveryPort;
+        public int DiscoveryPort { get { return this._discoveryPort; } }
+
+
         public event Action<IEnumerable<Core.BeaconLocation>> BeaconsUpdated
         {
             add { this._probe.BeaconsUpdated += value; }
             remove { this._probe.BeaconsUpdated -= value; }
         }
 
-        public Client(string beaconType)
+        public Client(string beaconType, int discoveryPort)
         {
-            this._probe = new Lib.Probe(beaconType);
+            if (string.IsNullOrEmpty(beaconType))
+            {
+                throw new ArgumentNullException("beaconType");
+            }
+            if (discoveryPort < 1)
+            {
+                throw new ArgumentOutOfRangeException("discoveryPort");
+            }
+
+            this._beaconType = beaconType;
+            this._discoveryPort = discoveryPort;
+
+            this._probe = new Lib.Probe(this._beaconType);
         }
         
         public void Start()
@@ -38,6 +57,7 @@ namespace Beacon
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
+               
                     this._probe.Dispose();
                 }
 

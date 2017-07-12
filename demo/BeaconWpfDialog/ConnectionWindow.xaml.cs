@@ -22,7 +22,7 @@ namespace BeaconWpfDialog
         {
             InitializeComponent();
 
-            probe = new Beacon.Client(probeName);
+            probe = new Beacon.Client(probeName, 1);
             probe.BeaconsUpdated += locations => Dispatcher.BeginInvoke((Action)(() => ReplaceBeaconsList(locations)));
             probe.Start();
         }

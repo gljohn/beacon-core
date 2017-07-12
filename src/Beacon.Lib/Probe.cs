@@ -32,6 +32,12 @@ namespace Beacon.Lib
 
         public Probe(string beaconType)
         {
+            if (string.IsNullOrEmpty(beaconType))
+            {
+                throw new ArgumentNullException("beaconType");
+            }
+
+
             udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             BeaconType = beaconType;
@@ -43,7 +49,7 @@ namespace Beacon.Lib
                 //udp.AllowNatTraversal(true);
                 udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IPProtectionLevel, IPProtectionLevel.Unrestricted);
             }
-            catch (Exception ex)
+            catch (SocketException ex)
             {
                 Debug.WriteLine("Error switching on NAT traversal: " + ex.Message);
             }
