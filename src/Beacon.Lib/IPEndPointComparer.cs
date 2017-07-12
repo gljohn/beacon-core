@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace BeaconLib
+namespace Beacon.Lib
 {
     internal class IPEndPointComparer : IComparer<IPEndPoint>
     {

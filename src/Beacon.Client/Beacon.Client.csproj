@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Beacon.Core\Beacon.Core.csproj" />
-    <ProjectReference Include="..\src\Beacon.Lib\Beacon.Lib.csproj" />
+    <ProjectReference Include="..\Beacon.Core\Beacon.Core.csproj" />
+    <ProjectReference Include="..\Beacon.Lib\Beacon.Lib.csproj" />
   </ItemGroup>
 
 </Project>

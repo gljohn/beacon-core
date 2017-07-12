@@ -21,12 +21,12 @@ namespace Beacon.Lib
         /// </summary>
         private static readonly TimeSpan BeaconTimeout = new TimeSpan(0, 0, 0, 5); // seconds
 
-        public event Action<IEnumerable<BeaconLocation>> BeaconsUpdated;
+        public event Action<IEnumerable<Core.BeaconLocation>> BeaconsUpdated;
 
         private readonly Thread thread;
         private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private readonly UdpClient udp = new UdpClient();
-        private IEnumerable<BeaconLocation> currentBeacons = Enumerable.Empty<BeaconLocation>();
+        private IEnumerable<Core.BeaconLocation> currentBeacons = Enumerable.Empty<Core.BeaconLocation>();
 
         private bool running = true;
 
@@ -40,14 +40,16 @@ namespace Beacon.Lib
             udp.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
             try 
             {
-                udp.AllowNatTraversal(true);
+                //udp.AllowNatTraversal(true);
+                udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IPProtectionLevel, IPProtectionLevel.Unrestricted);
             }
             catch (SocketException ex)
             {
                 Debug.WriteLine("Error switching on NAT traversal: " + ex.Message);
             }
 
-            udp.BeginReceive(ResponseReceived, null);
+            //udp.BeginReceive(ResponseReceived, null);
+            ResponseReceived(udp.ReceiveAsync().Result);
         }
 
         public void Start()
@@ -55,12 +57,11 @@ namespace Beacon.Lib
             thread.Start();
         }
 
-        private void ResponseReceived(IAsyncResult ar)
-        {
-            var remote = new IPEndPoint(IPAddress.Any, 0);
-            var bytes = udp.EndReceive(ar, ref remote);
+        private void ResponseReceived(UdpReceiveResult ar) {//IAsyncResult ar)
+            var remote = ar.RemoteEndPoint; //new IPEndPoint(IPAddress.Any, 0);
+            var bytes = ar.Buffer; // udp.EndReceive(ar, ref remote);
 
-            var typeBytes = Beacon.Encode(BeaconType).ToList();
+            var typeBytes = new DatagramPacket(BeaconType).Encode().ToList(); //Beacon.Encode(BeaconType).ToList();
             Debug.WriteLine(string.Join(", ", typeBytes.Select(_ => (char)_)));
             if (Beacon.HasPrefix(bytes, typeBytes))
             {
@@ -68,8 +69,8 @@ namespace Beacon.Lib
                 {
                     var portBytes = bytes.Skip(typeBytes.Count()).Take(2).ToArray();
                     var port      = (ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(portBytes, 0));
-                    var payload   = Beacon.Decode(bytes.Skip(typeBytes.Count() + 2));
-                    NewBeacon(new BeaconLocation(new IPEndPoint(remote.Address, port), payload, DateTime.Now));
+                    var payload = new DatagramPacket(bytes.Skip(typeBytes.Count())).Decode(); //Beacon.Decode(bytes.Skip(typeBytes.Count() + 2));
+                    NewBeacon(new Core.BeaconLocation(new IPEndPoint(remote.Address, port), payload, DateTime.Now));
                 }
                 catch (Exception ex)
                 {
@@ -77,7 +78,8 @@ namespace Beacon.Lib
                 }
             }
 
-            udp.BeginReceive(ResponseReceived, null);
+            //udp.BeginReceive(ResponseReceived, null);
+            ResponseReceived(udp.ReceiveAsync().Result);
         }
 
         public string BeaconType { get; private set; }
@@ -94,8 +96,9 @@ namespace Beacon.Lib
 
         private void BroadcastProbe()
         {
-            var probe = Beacon.Encode(BeaconType).ToArray();
-            udp.Send(probe, probe.Length, new IPEndPoint(IPAddress.Broadcast, Beacon.DiscoveryPort));
+            var probe = new DatagramPacket(BeaconType).Encode().ToArray(); //Beacon.Encode(BeaconType).ToArray();
+            udp.SendAsync(probe, probe.Length, new IPEndPoint(IPAddress.Broadcast, Beacon.DiscoveryPort));
+            //udp.Send(probe, probe.Length, new IPEndPoint(IPAddress.Broadcast, Beacon.DiscoveryPort));
         }
 
         private void PruneBeacons()
@@ -110,7 +113,7 @@ namespace Beacon.Lib
             currentBeacons = newBeacons;
         }
 
-        private void NewBeacon(BeaconLocation newBeacon)
+        private void NewBeacon(Core.BeaconLocation newBeacon)
         {
             var newBeacons = currentBeacons
                 .Where(_ => !_.Equals(newBeacon))

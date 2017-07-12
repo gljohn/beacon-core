@@ -51,7 +51,6 @@ namespace Beacon.Lib
             }
         }
 
-
         public void Start()
         {
             Stopped = false;
@@ -88,10 +87,7 @@ namespace Beacon.Lib
             return haystack.Count() >= prefix.Count() &&
                 haystack.Zip(prefix, (a, b) => a.Equals(b)).All(_ => _);
         }
-
-
-
-
+        
         public void Dispose()
         {
             Stop();
