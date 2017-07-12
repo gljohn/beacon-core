@@ -5,6 +5,23 @@ namespace Beacon.Core
 {
     public class BeaconConfig
     {
+
+        public BeaconConfig(string beaconType, ushort advertisedPort)
+        {
+            if (string.IsNullOrEmpty(beaconType))
+            {
+                throw new ArgumentNullException("beaconType");
+            }
+
+            if (advertisedPort < 1)
+            {
+                throw new ArgumentOutOfRangeException("advertisedPort");
+            }
+
+            this.BeaconType = beaconType;
+            this.AdvertisedPort = advertisedPort;
+
+        }
         /// <summary>
         /// Return the machine's hostname (usually nice to mention in the beacon text)
         /// </summary>
@@ -24,7 +41,6 @@ namespace Beacon.Core
         public ushort AdvertisedPort { get; private set; }
 
        
-
         /// <summary>
         /// 
         /// </summary>

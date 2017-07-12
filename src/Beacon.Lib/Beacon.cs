@@ -44,7 +44,7 @@ namespace Beacon.Lib
                 //udp.AllowNatTraversal(true);
 
                 //Hopefully the below works ok and AllowNatTraversal does nothing more. 
-                //    - https://msdn.microsoft.com/en-us/library/system.net.sockets.udpclient.allownattraversal(v=vs.110).aspxhttps://msdn.microsoft.com/en-us/library/system.net.sockets.udpclient.allownattraversal(v=vs.110).aspx
+                //https://msdn.microsoft.com/en-us/library/system.net.sockets.udpclient.allownattraversal(v=vs.110).aspx
                 udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IPProtectionLevel, IPProtectionLevel.Unrestricted);
             } catch (SocketException ex) {
                 Debug.WriteLine("Error switching on NAT traversal: " + ex.Message);

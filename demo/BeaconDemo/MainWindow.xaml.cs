@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using BeaconLib;
 using BeaconWpfDialog;
 
 namespace BeaconDemo
@@ -22,7 +21,7 @@ namespace BeaconDemo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Beacon> beacons = new List<Beacon>();
+        private List<Beacon.Server> beacons = new List<Beacon.Server>();
         private Random r = new Random();
 
         public MainWindow()
@@ -33,10 +32,12 @@ namespace BeaconDemo
         private void serverButton_Click(object sender, RoutedEventArgs e)
         {
             // We need a random port number otherwise all beacons will be the same
-            var b = new Beacon("beaconDemo", (ushort) r.Next(2048, 60000)) 
+            var config = new Beacon.Core.BeaconConfig("beaconDemo", (ushort)r.Next(2048, 60000))
             {
                 BeaconData = "Beacon at " + DateTime.Now + " on " + Dns.GetHostName()
             };
+
+            var b = new Beacon.Server(config);
             b.Start();
             beacons.Add(b);
         }

@@ -43,7 +43,7 @@ namespace Beacon.Lib
                 //udp.AllowNatTraversal(true);
                 udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IPProtectionLevel, IPProtectionLevel.Unrestricted);
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine("Error switching on NAT traversal: " + ex.Message);
             }

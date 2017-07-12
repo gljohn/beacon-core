@@ -6,7 +6,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BeaconLib;
+
 
 namespace BeaconWpfDialog
 {
@@ -15,14 +15,14 @@ namespace BeaconWpfDialog
     /// </summary>
     public partial class ConnectionWindow : Window
     {
-        private readonly Probe probe;
-        private readonly ObservableCollection<BeaconLocation> beaconsList = new ObservableCollection<BeaconLocation>();
+        private readonly Beacon.Client probe;
+        private readonly ObservableCollection<Beacon.Core.BeaconLocation> beaconsList = new ObservableCollection<Beacon.Core.BeaconLocation>();
 
         public ConnectionWindow(string probeName)
         {
             InitializeComponent();
 
-            probe = new Probe(probeName);
+            probe = new Beacon.Client(probeName);
             probe.BeaconsUpdated += locations => Dispatcher.BeginInvoke((Action)(() => ReplaceBeaconsList(locations)));
             probe.Start();
         }
@@ -37,7 +37,7 @@ namespace BeaconWpfDialog
             }
         }
 
-        private void ReplaceBeaconsList(IEnumerable<BeaconLocation> beacons)
+        private void ReplaceBeaconsList(IEnumerable<Beacon.Core.BeaconLocation> beacons)
         {
             beaconsList.Synchronise(beacons);
         }
@@ -49,20 +49,20 @@ namespace BeaconWpfDialog
             Close();
         }
 
-        public ObservableCollection<BeaconLocation> BeaconsList
+        public ObservableCollection<Beacon.Core.BeaconLocation> BeaconsList
         {
             get { return beaconsList; }
         }
 
-        public BeaconLocation SelectedBeacon
+        public Beacon.Core.BeaconLocation SelectedBeacon
         {
-            get { return (BeaconLocation)GetValue(SelectedBeaconProperty); }
+            get { return (Beacon.Core.BeaconLocation)GetValue(SelectedBeaconProperty); }
             set { SetValue(SelectedBeaconProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for SelectedBeacon.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedBeaconProperty =
-            DependencyProperty.Register("SelectedBeacon", typeof(BeaconLocation), typeof(ConnectionWindow), new UIPropertyMetadata(null,
+            DependencyProperty.Register("SelectedBeacon", typeof(Beacon.Core.BeaconLocation), typeof(ConnectionWindow), new UIPropertyMetadata(null,
                 (obj, e) => ((ConnectionWindow)obj).SelectedBeaconChanged()));
 
         private void SelectedBeaconChanged()
@@ -70,7 +70,7 @@ namespace BeaconWpfDialog
             LoadBeaconDetails(SelectedBeacon);
         }
 
-        public void LoadBeaconDetails(BeaconLocation beacon)
+        public void LoadBeaconDetails(Beacon.Core.BeaconLocation beacon)
         {
             if (beacon == null)
             {
