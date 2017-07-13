@@ -49,13 +49,20 @@ namespace Beacon.Lib
                 //udp.AllowNatTraversal(true);
                 udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IPProtectionLevel, IPProtectionLevel.Unrestricted);
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine("Error switching on NAT traversal: " + ex.Message);
             }
 
             //udp.BeginReceive(ResponseReceived, null);
-            ResponseReceived(udp.ReceiveAsync().Result);
+
+            Listen();
+        }
+
+        private async void Listen()
+        {
+            var result = await udp.ReceiveAsync();
+            ResponseReceived(result);
         }
 
         public void Start()
@@ -66,7 +73,7 @@ namespace Beacon.Lib
         private void ResponseReceived(UdpReceiveResult ar) {//IAsyncResult ar)
             var remote = ar.RemoteEndPoint; //new IPEndPoint(IPAddress.Any, 0);
             var bytes = ar.Buffer; // udp.EndReceive(ar, ref remote);
-
+            string value = new DatagramPacket(bytes).Decode();
             var typeBytes = new DatagramPacket(BeaconType).Encode().ToList(); //Beacon.Encode(BeaconType).ToList();
             Debug.WriteLine(string.Join(", ", typeBytes.Select(_ => (char)_)));
             if (Beacon.HasPrefix(bytes, typeBytes))
@@ -75,7 +82,7 @@ namespace Beacon.Lib
                 {
                     var portBytes = bytes.Skip(typeBytes.Count()).Take(2).ToArray();
                     var port      = (ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(portBytes, 0));
-                    var payload = new DatagramPacket(bytes.Skip(typeBytes.Count())).Decode(); //Beacon.Decode(bytes.Skip(typeBytes.Count() + 2));
+                    var payload = new DatagramPacket(bytes.Skip(typeBytes.Count() + 2)).Decode(); //Beacon.Decode(bytes.Skip(typeBytes.Count() + 2));
                     NewBeacon(new Core.BeaconLocation(new IPEndPoint(remote.Address, port), payload, DateTime.Now));
                 }
                 catch (Exception ex)
@@ -85,7 +92,7 @@ namespace Beacon.Lib
             }
 
             //udp.BeginReceive(ResponseReceived, null);
-            ResponseReceived(udp.ReceiveAsync().Result);
+            Listen();
         }
 
         public string BeaconType { get; private set; }

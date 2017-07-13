@@ -49,13 +49,23 @@ namespace Beacon.Lib
             } catch (SocketException ex) {
                 Debug.WriteLine("Error switching on NAT traversal: " + ex.Message);
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error switching on NAT traversal: " + e.Message);
+            }
         }
 
         public void Start()
         {
             Stopped = false;
             //udp.BeginReceive(ProbeReceived, null);
-            ProbeReceived(udp.ReceiveAsync().Result);
+            Listen();
+        }
+
+        private async void Listen()
+        {
+            var result = await udp.ReceiveAsync();
+            ProbeReceived(result);
         }
 
         public void Stop()
@@ -76,10 +86,11 @@ namespace Beacon.Lib
                     .Concat(BitConverter.GetBytes((ushort)IPAddress.HostToNetworkOrder((short)this._config.AdvertisedPort)))
                     .Concat(new DatagramPacket(this._config.BeaconData).Encode()).ToArray();
                 //udp.Send(responseData, responseData.Length, remote);
+                var data = new DatagramPacket(responseData).Decode();
                 udp.SendAsync(responseData, responseData.Length, remote);
             }
 
-            if (!Stopped) ProbeReceived(udp.ReceiveAsync().Result);// udp.BeginReceive(ProbeReceived, null);
+            if (!Stopped) Listen();// udp.BeginReceive(ProbeReceived, null);
         }
 
         internal static bool HasPrefix<T>(IEnumerable<T> haystack, IEnumerable<T> prefix)

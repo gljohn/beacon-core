@@ -20,11 +20,18 @@ namespace BeaconWpfDialog
 
         public ConnectionWindow(string probeName)
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
-            probe = new Beacon.Client(probeName, 1);
-            probe.BeaconsUpdated += locations => Dispatcher.BeginInvoke((Action)(() => ReplaceBeaconsList(locations)));
-            probe.Start();
+                probe = new Beacon.Client(probeName, 1);
+                probe.BeaconsUpdated += locations => Dispatcher.BeginInvoke((Action)(() => ReplaceBeaconsList(locations)));
+                probe.Start();
+            }
+            catch (Exception e)
+            {
+                var x = e.Message;
+            }
         }
 
         public string ConnectMessage
