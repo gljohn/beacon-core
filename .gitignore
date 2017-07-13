@@ -2,3 +2,7 @@
 /*.user
 bin
 obj
+.vs/**/*.*
+.vs/*.*
+.vs
+.vs/*

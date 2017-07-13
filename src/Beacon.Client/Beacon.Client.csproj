@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;net461;netcoreapp1.1</TargetFrameworks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Beacon.Core\Beacon.Core.csproj" />
+    <ProjectReference Include="..\Beacon.Lib\Beacon.Lib.csproj" />
+  </ItemGroup>
+
+</Project>
