@@ -97,7 +97,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Beacon.Server\Beacon.Server.csproj">
+    <ProjectReference Include="..\..\src\Beacon.Server\Beacon.Server.csproj">
       <Project>{1c45e42b-9577-4242-9cb9-9cd7dd3f6e5c}</Project>
       <Name>Beacon.Server</Name>
     </ProjectReference>
