@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beacon.Core", "src\Beacon.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beacon.Lib", "src\Beacon.Lib\Beacon.Lib.csproj", "{BF81A1F2-C58B-4FA4-91A5-4AAF01AF6715}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beacon.Server", "Beacon.Server\Beacon.Server.csproj", "{1C45E42B-9577-4242-9CB9-9CD7DD3F6E5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beacon.Server", "src\Beacon.Server\Beacon.Server.csproj", "{1C45E42B-9577-4242-9CB9-9CD7DD3F6E5C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2D38958C-B7D5-4AC2-8405-C35846CC288D} = {2D38958C-B7D5-4AC2-8405-C35846CC288D}
 		{BF81A1F2-C58B-4FA4-91A5-4AAF01AF6715} = {BF81A1F2-C58B-4FA4-91A5-4AAF01AF6715}
